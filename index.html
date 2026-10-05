@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DAILY CAPTIONS</title>
+<style>
+:root{--bg:#f4f8f5;--card:#fff;--tx:#14181a;--mut:#667a6e;--bd:#dce6df;--red:#e11d48;--grn:#16a34a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0a0d0b;--card:#141a16;--tx:#f1f5f2;--mut:#93a499;--bd:#25302a;--red:#ff4d6d;--grn:#2ee06f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Noto Sans Bengali","Segoe UI",sans-serif}
+.w{max-width:520px;margin:0 auto;padding:14px}
+header{text-align:center;padding:22px 10px 14px;border-radius:18px;background:linear-gradient(135deg,#e11d4833,#16a34a33);border:1px solid var(--bd)}
+h1{margin:0;font-size:28px;letter-spacing:2px;background:linear-gradient(90deg,var(--red),var(--grn));-webkit-background-clip:text;background-clip:text;color:transparent}
+header p{margin:4px 0 0;color:var(--mut);font-size:13px}
+#q{width:100%;margin:14px 0 4px;padding:12px 14px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font-size:15px}
+#q:focus{outline:2px solid var(--grn);border-color:transparent}
+.h{font-size:15px;margin:18px 2px 8px;color:var(--mut)}
+.folder{display:flex;align-items:center;gap:12px;padding:16px;margin-top:10px;border-radius:14px;background:var(--card);border:1px solid var(--bd);border-left:6px solid var(--red);color:var(--tx);text-decoration:none}
+.folder:nth-of-type(even){border-left-color:var(--grn)}
+.folder .i{font-size:26px}.folder b{display:block;font-size:15px;letter-spacing:.5px}.folder small{color:var(--mut)}
+.cap{margin-top:10px;padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--bd)}
+.cap p{margin:0 0 12px;font-size:17px}
+.today{border:2px solid var(--grn);background:linear-gradient(135deg,#e11d4814,#16a34a14),var(--card)}
+.row{display:flex;gap:8px}
+.b{flex:1;text-align:center;padding:10px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;border:2px solid}
+.g{background:var(--grn);border-color:var(--grn);color:#fff}
+.r{background:transparent;border-color:var(--red);color:var(--red)}
+.back{display:inline-block;margin:16px 0 4px;color:var(--grn);font-weight:700;text-decoration:none}
+.t{font-size:20px;margin:6px 2px;color:var(--red)}
+.empty{text-align:center;color:var(--mut);padding:30px 10px}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(30px);background:var(--grn);color:#fff;padding:10px 20px;border-radius:30px;font-weight:700;opacity:0;transition:.25s;pointer-events:none}
+#toast.on{opacity:1;transform:translateX(-50%)}
+footer{text-align:center;color:var(--mut);font-size:12px;margin:26px 0 10px}
+</style>
+</head>
+<body>
+<div class="w">
+  <header><h1>DAILY CAPTIONS</h1><p>তোমার মনের কথা, আমাদের ক্যাপশনে 💚❤️</p></header>
+  <input id="q" type="search" placeholder="🔍 ক্যাপশন খুঁজুন...">
+  <div id="app"></div>
+  <footer>© DAILY CAPTIONS</footer>
+</div>
+<div id="toast"></div>
+<script src="captions.js"></script>
+<script>
+var $=function(i){return document.getElementById(i)},ALL=[];
+FOLDERS.forEach(function(f){f.captions.forEach(function(c){ALL.push(c)})});
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.k);toast.k=setTimeout(function(){t.classList.remove("on")},1400)}
+function copy(x){
+  function ok(){toast("Copied ✓")}
+  function fb(){var a=document.createElement("textarea");a.value=x;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}a.remove()}
+  try{navigator.clipboard.writeText(x).then(ok,fb)}catch(e){fb()}
+}
+function card(x,cls){
+  var d=el("div","cap"+(cls?" "+cls:"")),r=el("div","row"),b=el("button","b g","Copy"),w=el("a","b r","WhatsApp");
+  b.onclick=function(){copy(x)};w.href="https://wa.me/?text="+encodeURIComponent(x);w.target="_blank";w.rel="noopener";
+  r.append(b,w);d.append(el("p","",x),r);return d;
+}
+function render(){
+  var app=$("app"),id=location.hash.slice(1),f=FOLDERS.filter(function(x){return x.id===id})[0];
+  app.textContent="";$("q").value="";
+  if(f){
+    var a=el("a","back","← সব ফোল্ডার");a.href="#";app.append(a,el("h2","t","📁 "+f.name));
+    if(!f.captions.length)app.append(el("div","empty","এই ফোল্ডারে এখনো ক্যাপশন নেই।"));
+    f.captions.forEach(function(c){app.append(card(c))});
+    window.scrollTo(0,0);return;
+  }
+  if(ALL.length){app.append(el("h2","h","✨ আজকের ক্যাপশন"));app.append(card(ALL[Math.floor(Date.now()/864e5)%ALL.length],"today"))}
+  app.append(el("h2","h","📁 ক্যাপশন ফোল্ডার"));
+  FOLDERS.forEach(function(f){
+    var a=el("a","folder");a.href="#"+f.id;
+    var m=el("div");m.append(el("b","",f.name),el("small","",f.captions.length+" টি ক্যাপশন"));
+    a.append(el("span","i",f.icon),m);app.append(a);
+  });
+}
+$("q").oninput=function(){
+  var v=this.value.trim().toLowerCase();if(!v){render();return}
+  var app=$("app"),r=ALL.filter(function(c){return c.toLowerCase().indexOf(v)>-1});
+  app.textContent="";app.append(el("h2","h",r.length+" টি ফলাফল"));r.forEach(function(c){app.append(card(c))});
+};
+window.addEventListener("hashchange",render);render();
+</script>
+</body>
+</html>
